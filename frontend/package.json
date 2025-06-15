@@ -10,14 +10,14 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "vue": "^3.4.0",
-    "vue-router": "^4.2.0",
-    "pinia": "^2.1.0",
-    "naive-ui": "^2.35.0",
-    "axios": "^1.6.0",
+    "@vicons/ionicons5": "^0.13.0",
     "@vueuse/core": "^10.5.0",
-    "vueuse": "^10.5.0",
-    "file-saver": "^2.0.5"
+    "axios": "^1.6.0",
+    "file-saver": "^2.0.5",
+    "naive-ui": "^2.35.0",
+    "pinia": "^2.1.0",
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
