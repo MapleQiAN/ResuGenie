@@ -98,3 +98,4 @@ Desktop.ini
 
 # Debug files
 .nyc_output/
+create_dirs.ps1
