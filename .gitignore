@@ -44,6 +44,7 @@ venv.bak/
 *.swp
 *.swo
 .DS_Store
+.cursor
 
 # Vue/Vite
 .DS_Store
