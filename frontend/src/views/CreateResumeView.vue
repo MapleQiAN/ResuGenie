@@ -3,13 +3,16 @@
     <div class="container">
       <n-space vertical size="large">
         <div class="page-header">
-          <h1 class="page-title">创建您的专业简历</h1>
+          <h1 class="page-title">✨ 创建您的专业简历 ✨</h1>
           <p class="page-description">填写您的信息，我们将帮助您生成专业的简历内容</p>
+          <div class="cute-divider">
+            <span></span><span></span><span></span>
+          </div>
         </div>
         
         <n-card>
           <n-tabs type="line" animated>
-            <n-tab-pane name="basics" tab="基本信息">
+            <n-tab-pane name="basics" tab="基本信息 🧑‍💼">
               <n-form
                 ref="basicsFormRef"
                 :model="resumeStore.resumeForm.basics"
@@ -48,7 +51,7 @@
               </n-form>
             </n-tab-pane>
             
-            <n-tab-pane name="work" tab="工作经历">
+            <n-tab-pane name="work" tab="工作经历 💼">
               <div class="section-actions mb-4">
                 <n-button @click="handleAddWork" type="primary" secondary>
                   <template #icon>
@@ -115,7 +118,7 @@
               <n-empty v-if="resumeStore.resumeForm.work.length === 0" description="尚未添加工作经历" />
             </n-tab-pane>
             
-            <n-tab-pane name="education" tab="教育经历">
+            <n-tab-pane name="education" tab="教育经历 🎓">
               <div class="section-actions mb-4">
                 <n-button @click="handleAddEducation" type="primary" secondary>
                   <template #icon>
@@ -177,7 +180,7 @@
               <n-empty v-if="resumeStore.resumeForm.education.length === 0" description="尚未添加教育经历" />
             </n-tab-pane>
             
-            <n-tab-pane name="skills" tab="技能特长">
+            <n-tab-pane name="skills" tab="技能特长 🔧">
               <div class="section-actions mb-4">
                 <n-button @click="handleAddSkill" type="primary" secondary>
                   <template #icon>
@@ -227,7 +230,7 @@
               <n-empty v-if="resumeStore.resumeForm.skills.length === 0" description="尚未添加技能" />
             </n-tab-pane>
             
-            <n-tab-pane name="projects" tab="项目经历">
+            <n-tab-pane name="projects" tab="项目经历 🚀">
               <div class="section-actions mb-4">
                 <n-button @click="handleAddProject" type="primary" secondary>
                   <template #icon>
@@ -332,8 +335,9 @@
             <n-button @click="resetForm">
               重置表单
             </n-button>
-            <n-button type="primary" size="large" @click="generateResume" :loading="resumeStore.generating">
-              生成简历
+            <n-button type="primary" size="large" @click="generateResume" :loading="resumeStore.generating" class="generate-button">
+              <span class="button-text">生成简历</span>
+              <!-- <n-icon class="button-icon"><add-icon /></n-icon> -->
             </n-button>
           </n-space>
         </div>
@@ -394,22 +398,22 @@ const templates = [
   {
     id: 'modern',
     name: '现代简约',
-    preview: 'https://via.placeholder.com/150x200?text=现代简约'
+    preview: 'https://img.icons8.com/clouds/344/resume.png'
   },
   {
     id: 'professional',
     name: '专业商务',
-    preview: 'https://via.placeholder.com/150x200?text=专业商务'
+    preview: 'https://img.icons8.com/clouds/344/business-report.png'
   },
   {
     id: 'creative',
     name: '创意设计',
-    preview: 'https://via.placeholder.com/150x200?text=创意设计'
+    preview: 'https://img.icons8.com/clouds/344/web-design.png'
   },
   {
     id: 'minimal',
     name: '极简风格',
-    preview: 'https://via.placeholder.com/150x200?text=极简风格'
+    preview: 'https://img.icons8.com/clouds/344/document.png'
   }
 ]
 
@@ -509,89 +513,367 @@ const generateResume = async () => {
 </script>
 
 <style scoped>
+.create-resume-view {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
 .page-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  animation: fadeInDown 0.8s ease-out;
 }
 
 .page-title {
-  font-size: 2rem;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #4263eb;
+  margin-bottom: 0.8rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .page-description {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
+  font-size: 1.2rem;
+  color: #5c6a7c;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cute-divider {
+  margin: 1.5rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cute-divider span {
+  width: 8px;
+  height: 8px;
+  background-color: #4263eb;
+  margin: 0 8px;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+.cute-divider span:nth-child(1) {
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.cute-divider span:nth-child(2) {
+  animation: bounce 1.2s infinite ease-in-out 0.2s;
+  width: 12px;
+  height: 12px;
+  opacity: 1;
+}
+
+.cute-divider span:nth-child(3) {
+  animation: bounce 1.2s infinite ease-in-out 0.4s;
+}
+
+.n-card {
+  border-radius: 16px !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.n-card:hover {
+  box-shadow: 0 12px 40px rgba(66, 99, 235, 0.12) !important;
+  transform: translateY(-3px);
 }
 
 .section-actions {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.section-actions .n-button {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.section-actions .n-button:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+}
+
+.section-actions .n-button:before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: all .3s;
+  z-index: -1;
+}
+
+.section-actions .n-button:hover:before {
+  width: 100%;
 }
 
 .mb-4 {
   margin-bottom: 1rem;
 }
 
+.n-form-item {
+  margin-bottom: 1.2rem;
+}
+
+.n-input, .n-date-picker, .n-select {
+  border-radius: 10px !important;
+}
+
+.n-button {
+  border-radius: 12px !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.n-button:not(.n-button--dashed):not(.n-button--text) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.n-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.n-button[type="primary"] {
+  background: linear-gradient(45deg, #4263eb, #6e8ffa) !important;
+}
+
+.n-button[type="primary"]:hover {
+  background: linear-gradient(45deg, #3a57d5, #5f80f0) !important;
+}
+
 .skill-level-text {
   text-align: center;
   margin-top: 0.5rem;
-  color: var(--text-secondary);
+  font-weight: 500;
+  color: #5c6a7c;
+}
+
+.n-collapse-item {
+  margin-bottom: 0.8rem;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
 }
 
 .templates-section {
-  padding: 1rem 0;
+  padding: 1.5rem 0.5rem;
 }
 
 .templates-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.8rem;
 }
 
 .template-item {
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: #fff;
 }
 
 .template-item:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(66, 99, 235, 0.15);
 }
 
 .template-item.active {
-  border-color: var(--primary-color);
+  border-color: #4263eb;
+  box-shadow: 0 8px 25px rgba(66, 99, 235, 0.25);
 }
 
 .template-preview {
-  height: 200px;
+  height: 240px;
   overflow: hidden;
+  position: relative;
+}
+
+.template-preview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.1) 100%);
+  z-index: 1;
 }
 
 .template-preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.template-item:hover .template-preview img {
+  transform: scale(1.05);
 }
 
 .template-name {
-  padding: 0.5rem;
+  padding: 0.8rem;
   text-align: center;
-  font-weight: 500;
+  font-weight: 600;
+  color: #343a40;
+  font-size: 1.05rem;
+  background: #f8f9fa;
 }
 
 .form-actions {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+  animation: fadeInUp 0.8s ease-out;
+  position: relative;
+}
+
+.form-actions:before {
+  content: '✨';
+  position: absolute;
+  left: 25%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  opacity: 0.5;
+}
+
+.form-actions:after {
+  content: '✨';
+  position: absolute;
+  right: 25%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  opacity: 0.5;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
   .templates-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .page-description {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .templates-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .page-title {
+    font-size: 1.8rem;
+  }
+}
+
+.form-actions .n-button[type="primary"] {
+  background: linear-gradient(45deg, #4263eb, #6e8ffa) !important;
+  padding: 0 2rem;
+  height: 50px;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-actions .generate-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.form-actions .button-icon {
+  transition: all 0.3s ease;
+}
+
+.form-actions .generate-button:hover .button-icon {
+  transform: rotate(90deg);
+}
+
+.n-tabs-nav {
+  margin-bottom: 1.5rem !important;
+}
+
+.n-tab-pane {
+  padding: 0.5rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.n-collapse-item__header {
+  border-radius: 10px 10px 0 0 !important;
+  background-color: #f8f9fa !important;
+  font-weight: 600;
+}
+
+.n-collapse-item__header:hover {
+  background-color: #edf2ff !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 </style> 
