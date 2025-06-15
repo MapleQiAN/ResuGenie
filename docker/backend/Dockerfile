@@ -2,23 +2,28 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+# 复制依赖文件
+COPY backend/requirements.txt requirements.txt
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        build-essential \
-        libcairo2-dev \
-        libpango1.0-dev \
-        libgdk-pixbuf2.0-dev \
-        libffi-dev \
-        shared-mime-info \
-    && pip install --no-cache-dir -r requirements.txt \
-    && apt-get purge -y --auto-remove build-essential \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# 安装依赖
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# 复制整个后端代码
+COPY backend /app/backend
 
+# 为环境变量设置默认值
+ENV PORT=8000
+ENV OPENAI_API_KEY=""
+ENV OPENAI_API_BASE="https://api.openai.com/v1"
+ENV OPENAI_DEFAULT_MODEL="gpt-3.5-turbo"
+ENV DEEPSEEK_API_KEY=""
+ENV DEEPSEEK_API_BASE="https://api.deepseek.com/v1"
+ENV DEEPSEEK_DEFAULT_MODEL="deepseek-chat"
+ENV OLLAMA_API_BASE="http://ollama:11434/api"
+ENV OLLAMA_DEFAULT_MODEL="llama2"
+
+# 暴露端口
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"] 
+# 运行应用
+CMD ["python", "-m", "backend.app.main"] 

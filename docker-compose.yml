@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./
+      dockerfile: docker/backend/Dockerfile
+    container_name: resugenie-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+    env_file:
+      - ./backend/app/.env
+    restart: always
+
+  frontend:
+    build:
+      context: ./
+      dockerfile: docker/frontend/Dockerfile
+    container_name: resugenie-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app/frontend
+    depends_on:
+      - backend
+    restart: always
+
+  # 可选: 添加Ollama服务
+  ollama:
+    image: ollama/ollama:latest
+    container_name: resugenie-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./data/ollama:/root/.ollama
+    restart: always
