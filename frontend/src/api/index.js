@@ -102,7 +102,28 @@ export const resumeApi = {
   exportResumePDF: (resumeId) => api.get(`/resumes/${resumeId}/export/pdf`, { responseType: 'blob' }),
   
   // 获取简历模板列表
-  getTemplates: () => api.get('/resume-templates')
+  getTemplates: () => api.get('/resume-templates'),
+  
+  // 简历聊天补全API（用于交互式优化）
+  resumeChatCompletion: (data) => api.post('/resume-chat/completions', data),
+  
+  // 简历内容优化API（用于直接优化）
+  optimizeResumeContent: (content, jobPosition, model = 'gpt-3.5-turbo') => {
+    return api.post('/resume-chat/optimize', {
+      content,
+      jobPosition,
+      model
+    })
+  },
+  
+  // AI生成简历内容（用于表单生成）
+  generateResumeContent: (resumeData, targetPosition, model = 'gpt-3.5-turbo') => {
+    return api.post('/resume-chat/generate', {
+      resumeData,
+      targetPosition,
+      model
+    })
+  }
 }
 
 export default api 

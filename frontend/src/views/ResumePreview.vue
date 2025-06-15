@@ -7,6 +7,7 @@
           <template #header-extra>
             <n-button-group>
               <n-button size="small" @click="exportPDF">导出PDF</n-button>
+              <n-button size="small" @click="optimizeResume" :loading="optimizing">一键优化</n-button>
               <n-button size="small" @click="editMode = !editMode">
                 {{ editMode ? '预览模式' : '编辑模式' }}
               </n-button>
@@ -97,18 +98,21 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, nextTick, inject } from 'vue'
 import { useMessage } from 'naive-ui'
 import { marked } from 'marked'
 import { useLlmStore } from '../store/llm'
+import { resumeApi } from '../api'
 import ModelSelector from '../components/common/ModelSelector.vue'
 
 const message = useMessage()
+const dialog = inject('dialog') // 注入对话框服务
 const llmStore = useLlmStore()
 
 // 简历内容
 const resumeContent = ref('')
 const editMode = ref(false)
+const optimizing = ref(false)
 
 // 聊天相关状态
 const userInput = ref('')
@@ -166,76 +170,65 @@ const sendMessage = async () => {
   isLoading.value = true
   
   try {
-    // 判断是否是关于模型身份的问题
-    if (isIdentityQuestion(userQuestion)) {
-      // 如果是身份相关问题，直接返回指定回答
-      messages.value.push({
-        role: 'assistant',
-        content: '我是基于claude-4-sonnet-thinking模型的AI助手，在Cursor IDE中为您提供支持。我能够在Cursor IDE中为您提供全方位的支持。不论是编程疑难解答、代码优化建议、技术知识讲解，还是日常开发中的各种任务，我都可以为您提供高效、专业的帮助。无论您遇到什么问题，都可以随时向我提问，我会尽力为您提供最优的解决方案，助力您的开发之路更加顺畅！'
-      })
-    } else if (resumeContent.value) {
-      // 如果有简历内容，构建提示语包含简历内容
-      let prompt = `我需要你帮我优化以下简历内容。用户问题是：${userQuestion}\n\n当前简历内容：\n${resumeContent.value}`
-      
-      // 发送到后端API
-      const response = await llmStore.sendMessage(prompt)
-      
-      if (response && response.choices && response.choices.length > 0) {
-        const aiResponse = response.choices[0].message.content
-        
-        // 添加AI回复
-        messages.value.push({
-          role: 'assistant',
-          content: aiResponse
-        })
-        
-        // 如果回复中明确包含了更新后的完整简历，可以自动更新简历内容
-        if (aiResponse.includes('以下是优化后的简历') || aiResponse.includes('以下是修改后的简历')) {
-          const updatedResume = extractResumeContent(aiResponse)
-          if (updatedResume) {
-            resumeContent.value = updatedResume
-            message.success('简历内容已自动更新')
-          }
-        }
-      }
-    } else {
-      // 如果没有简历内容，告知用户需要先生成简历
-      messages.value.push({
-        role: 'assistant',
-        content: '目前还没有简历内容。您可以点击"生成示例简历"按钮，或者告诉我您想要创建什么类型的简历，我将帮您生成一份。'
+    // 构建消息列表，包含之前的对话历史
+    const chatMessages = messages.value.map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }))
+    
+    // 如果有简历内容但还没有在消息中提供给AI
+    if (resumeContent.value && !messagesIncludeResume()) {
+      // 在用户问题之前插入系统消息，提供简历内容
+      chatMessages.unshift({
+        role: 'system',
+        content: `以下是用户的简历内容，请基于这些内容提供优化建议：\n\n${resumeContent.value}`
       })
     }
+    
+    // 使用简历专用API发送请求
+    const response = await resumeApi.resumeChatCompletion({
+      model: llmStore.currentModel || 'gpt-3.5-turbo',
+      messages: chatMessages,
+      temperature: 0.7
+    })
+    
+    if (response && response.choices && response.choices.length > 0) {
+      const aiResponse = response.choices[0].message.content
+      
+      // 添加AI回复
+      messages.value.push({
+        role: 'assistant',
+        content: aiResponse
+      })
+      
+      // 如果回复中明确包含了更新后的完整简历，可以自动更新简历内容
+      if (aiResponse.includes('以下是优化后的简历') || aiResponse.includes('以下是修改后的简历')) {
+        const updatedResume = extractResumeContent(aiResponse)
+        if (updatedResume) {
+          resumeContent.value = updatedResume
+          message.success('简历内容已自动更新')
+        }
+      }
+    }
   } catch (error) {
-    console.error('发送消息出错：', error)
+    console.error('发送消息失败:', error)
+    message.error('发送失败: ' + (error.message || '未知错误'))
+    
+    // 添加错误消息
     messages.value.push({
       role: 'assistant',
-      content: `抱歉，处理您的请求时出现了错误。${error.message || ''}`
+      content: '抱歉，我暂时无法回答您的问题，请稍后再试。'
     })
   } finally {
     isLoading.value = false
-    
-    // 再次滚动到底部
-    await nextTick()
-    if (messagesContainer.value) {
-      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-    }
   }
 }
 
-// 判断是否为身份/模型相关问题
-const isIdentityQuestion = (content) => {
-  const identityKeywords = [
-    '你是谁', '你是什么模型', '你叫什么名字', 
-    '你的名字是什么', '你是什么AI', '你是哪个版本',
-    '你是什么语言模型', '你是什么助手', '你的身份',
-    '你是什么', '你是谁开发的', '你基于什么',
-    '你用什么训练的', '你的创造者是谁', '什么公司开发的你',
-    'your name', 'your identity', 'which model', 
-    'which company', 'who created you', 'what are you'
-  ]
-  
-  return identityKeywords.some(keyword => 
-    content.toLowerCase().includes(keyword.toLowerCase()))
+// 检查消息历史中是否已经包含简历内容
+const messagesIncludeResume = () => {
+  return messages.value.some(msg => 
+    msg.role === 'system' && msg.content.includes('以下是用户的简历内容')
+  )
 }
 
 // 从AI回复中提取更新的简历内容
@@ -305,6 +298,74 @@ const generateSampleResume = async () => {
     message.error(`生成示例简历失败：${error.message || '未知错误'}`)
   } finally {
     isLoading.value = false
+  }
+}
+
+// 一键优化简历
+const optimizeResume = async () => {
+  if (!resumeContent.value) {
+    message.warning('没有可优化的内容，请先生成或输入简历')
+    return
+  }
+  
+  try {
+    optimizing.value = true
+    
+    // 弹出对话框询问目标职位
+    const jobPosition = await new Promise((resolve) => {
+      const d = dialog.warning({
+        title: '优化简历',
+        content: '请输入您的目标职位，以便AI更有针对性地优化简历',
+        positiveText: '确定',
+        negativeText: '取消',
+        inputProps: {
+          value: '',
+          placeholder: '如：前端开发工程师',
+          onUpdateValue: (val) => {
+            d.content = `请输入您的目标职位，以便AI更有针对性地优化简历: ${val}`
+          }
+        },
+        onPositiveClick: () => {
+          const inputValue = d.content.split(':')[1]?.trim() || ''
+          resolve(inputValue)
+          return true
+        },
+        onNegativeClick: () => {
+          resolve('')
+          return true
+        }
+      })
+    })
+    
+    if (!jobPosition) {
+      message.info('已取消优化')
+      return
+    }
+    
+    // 调用API优化简历内容
+    const response = await resumeApi.optimizeResumeContent(
+      resumeContent.value,
+      jobPosition
+    )
+    
+    if (response && response.optimized) {
+      // 更新简历内容
+      resumeContent.value = response.optimized
+      message.success('简历已成功优化！')
+      
+      // 添加系统消息到聊天
+      messages.value.push({
+        role: 'system',
+        content: '简历已使用AI进行了优化。有任何问题可以随时向我咨询。'
+      })
+    } else {
+      message.error('优化失败：未能获取优化内容')
+    }
+  } catch (error) {
+    console.error('简历优化错误：', error)
+    message.error('优化失败：' + (error.message || '未知错误'))
+  } finally {
+    optimizing.value = false
   }
 }
 

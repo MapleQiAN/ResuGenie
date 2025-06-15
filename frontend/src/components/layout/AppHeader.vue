@@ -78,7 +78,8 @@ import {
   Create as EditIcon,
   HelpCircle as HelpCircleIcon,
   Eye as PreviewIcon,
-  Rocket as RocketIcon
+  Rocket as RocketIcon,
+  ChatbubbleEllipses as ChatbubbleEllipsesIcon
 } from '@vicons/ionicons5'
 
 const isDarkMode = inject('isDarkMode')

@@ -503,11 +503,34 @@ const generateResume = async () => {
       return message.error('请至少填写姓名等基本信息')
     }
 
+    // 设置生成中状态
+    resumeStore.generating = true
+    
+    // 首先使用AI来优化简历内容
+    try {
+      const targetPosition = resumeStore.resumeForm.basics.label || ''
+      const aiResponse = await resumeApi.generateResumeContent(
+        resumeStore.resumeForm, 
+        targetPosition
+      )
+      
+      if (aiResponse && aiResponse.content) {
+        // 在控制台显示AI生成的内容，便于调试
+        console.log('AI生成的简历内容:', aiResponse.content)
+      }
+    } catch (aiError) {
+      console.error('AI优化简历失败:', aiError)
+      // AI优化失败时继续使用原始数据创建简历
+    }
+
+    // 创建简历
     await resumeStore.createResume()
     message.success('简历创建成功')
     router.push('/preview')
   } catch (error) {
     message.error('创建简历失败：' + (error.message || '未知错误'))
+  } finally {
+    resumeStore.generating = false
   }
 }
 </script>
