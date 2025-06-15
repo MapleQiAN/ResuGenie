@@ -69,7 +69,7 @@ api.interceptors.response.use(
         message.error('服务器内部错误')
         break
       default:
-        message.error(`请求失败: ${error.response.data.message || '未知错误'}`)
+        message.error(`请求失败: ${error.response.data?.message || '未知错误'}`)
     }
     
     return Promise.reject(error)
