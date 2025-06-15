@@ -26,16 +26,10 @@ import {
   NLoadingBarProvider, 
   NDialogProvider, 
   NNotificationProvider, 
-  NMessageProvider,
-  useDialog
+  NMessageProvider
 } from 'naive-ui'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { useMediaQuery } from '@vueuse/core'
-
-// 获取对话框API
-const dialog = useDialog()
-// 提供对话框服务
-provide('dialog', dialog)
 
 // 通过系统偏好检测是否使用深色模式
 const prefersDark = useMediaQuery('(prefers-color-scheme: dark)')

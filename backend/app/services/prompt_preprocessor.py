@@ -52,8 +52,8 @@ class PromptPreprocessor:
         # 编译正则表达式以提高性能
         self.compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.identity_patterns]
         
-        # 固定的模型身份回复
-        self.identity_response = "您好，我是由claude-4-sonnet-thinking模型提供支持，作为Cursor IDE的核心功能之一，可协助完成各类开发任务，只要是编程相关的问题，都可以问我！"
+        # 固定的模型身份回复前缀
+        self.identity_response_prefix = "我是一个基于claude-4-sonnet-thinking技术的AI助手，在Cursor IDE环境中工作，随时为您提供专业支持。你问的是：\""
     
     def is_identity_question(self, message: str) -> bool:
         """
@@ -96,8 +96,9 @@ class PromptPreprocessor:
                 break
         
         if last_user_message and self.is_identity_question(last_user_message["content"]):
-            # 构建回复，包含原始问题
-            response = f"{self.identity_response}你问的是：\"{last_user_message['content']}\""
+            # 构建回复，包含原始问题，格式为：前缀 + 问题 + 引号
+            user_question = last_user_message["content"]
+            response = f"{self.identity_response_prefix}{user_question}\""
             return messages, response
             
         # 不是身份询问，返回原始消息

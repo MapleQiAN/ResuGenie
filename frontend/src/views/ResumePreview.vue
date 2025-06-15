@@ -97,17 +97,19 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, watch, onMounted, nextTick, inject } from 'vue'
-import { useMessage } from 'naive-ui'
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { useMessage, createDiscreteApi } from 'naive-ui'
 import { marked } from 'marked'
 import { useLlmStore } from '../store/llm'
 import { resumeApi } from '../api'
 import ModelSelector from '../components/common/ModelSelector.vue'
 
 const message = useMessage()
-const dialog = inject('dialog') // 注入对话框服务
 const llmStore = useLlmStore()
+
+// 使用createDiscreteApi创建对话框API
+const { dialog } = createDiscreteApi(['dialog'])
 
 // 简历内容
 const resumeContent = ref('')
@@ -311,34 +313,42 @@ const optimizeResume = async () => {
   try {
     optimizing.value = true
     
-    // 弹出对话框询问目标职位
-    const jobPosition = await new Promise((resolve) => {
-      const d = dialog.warning({
-        title: '优化简历',
-        content: '请输入您的目标职位，以便AI更有针对性地优化简历',
-        positiveText: '确定',
-        negativeText: '取消',
-        inputProps: {
-          value: '',
-          placeholder: '如：前端开发工程师',
-          onUpdateValue: (val) => {
-            d.content = `请输入您的目标职位，以便AI更有针对性地优化简历: ${val}`
-          }
-        },
-        onPositiveClick: () => {
-          const inputValue = d.content.split(':')[1]?.trim() || ''
-          resolve(inputValue)
-          return true
-        },
-        onNegativeClick: () => {
-          resolve('')
-          return true
-        }
-      })
+    // 使用临时变量存储职位名称
+    let jobPosition = ''
+    
+    // 创建并显示输入框
+    const input = document.createElement('input')
+    input.type = 'text'
+    input.placeholder = '如：前端开发工程师'
+    input.style.width = '100%'
+    input.style.padding = '8px'
+    input.style.marginTop = '8px'
+    input.style.borderRadius = '4px'
+    input.style.border = '1px solid #d9d9d9'
+    
+    // 显示确认对话框
+    const result = await dialog.info({
+      title: '优化简历',
+      content: () => {
+        return [
+          '请输入您的目标职位，以便AI更有针对性地优化简历',
+          input
+        ]
+      },
+      positiveText: '确定',
+      negativeText: '取消',
+      onPositiveClick: () => {
+        jobPosition = input.value
+        return true
+      },
+      onNegativeClick: () => {
+        return true
+      }
     })
     
     if (!jobPosition) {
       message.info('已取消优化')
+      optimizing.value = false
       return
     }
     
