@@ -19,7 +19,7 @@
                 <n-icon class="icon-margin-right"><rocket-icon /></n-icon>
                 开始创建简历
               </n-button>
-              <n-button size="large" class="btn-animated" round @click="handleOptimizeResume">
+              <n-button size="large" class="btn-animated optimize-btn" round @click="handleOptimizeResume">
                 <n-icon class="icon-margin-right"><sparkles-icon /></n-icon>
                 优化现有简历
               </n-button>
@@ -350,6 +350,19 @@ const handleOptimizeResume = () => {
   transform: translateX(100%);
 }
 
+.optimize-btn {
+  border: 2px solid var(--primary-color);
+  background: transparent;
+  color: var(--primary-color);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+  transition: all 0.3s ease;
+}
+
+.optimize-btn:hover {
+  background: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+}
+
 .icon-margin-right {
   margin-right: 8px;
   display: inline-flex;
@@ -640,7 +653,8 @@ const handleOptimizeResume = () => {
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 1;
   backdrop-filter: blur(10px);
-  overflow: hidden;
+  overflow: visible;
+  margin-top: 25px;
 }
 
 .step-card::before {
@@ -681,6 +695,7 @@ const handleOptimizeResume = () => {
   justify-content: center;
   box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
   z-index: 2;
+  overflow: visible;
 }
 
 .step-icon-wrapper {
