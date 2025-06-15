@@ -376,6 +376,7 @@ import {
   Add as AddIcon,
   Close as CloseIcon
 } from '@vicons/ionicons5'
+import {resumeApi} from "@/api/index.js";
 
 const resumeStore = useResumeStore()
 const message = useMessage()
