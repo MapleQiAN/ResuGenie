@@ -77,6 +77,7 @@ import {
   DocumentText as FileTextIcon,
   Create as EditIcon,
   HelpCircle as HelpCircleIcon,
+  Eye as PreviewIcon,
   Rocket as RocketIcon
 } from '@vicons/ionicons5'
 
@@ -122,6 +123,12 @@ const menuOptions = [
     key: 'optimize',
     icon: renderIcon(EditIcon),
     onClick: () => router.push('/optimize')
+  },
+  {
+    label: () => h('div', { class: 'menu-item' }, '简历预览'),
+    key: 'preview',
+    icon: renderIcon(PreviewIcon),
+    onClick: () => router.push('/preview')
   },
   {
     label: () => h('div', { class: 'menu-item' }, '帮助中心'),

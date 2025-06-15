@@ -1,9 +1,12 @@
 import axios from 'axios'
 import { useMessage } from 'naive-ui'
 
+// 读取环境变量中的API基础路径，默认为本地开发地址
+const BASE_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+
 // 创建axios实例
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: BASE_API_URL,
   timeout: 30000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json'

@@ -26,6 +26,22 @@ const routes = [
     }
   },
   {
+    path: '/ai-assistant',
+    name: 'ai-assistant',
+    component: () => import('@/views/ResumeAiAssistant.vue'),
+    meta: {
+      title: 'AI简历助手 - ResuGenie'
+    }
+  },
+  {
+    path: '/preview',
+    name: 'preview',
+    component: () => import('@/views/ResumePreview.vue'),
+    meta: {
+      title: '简历预览 - ResuGenie'
+    }
+  },
+  {
     path: '/help',
     name: 'help',
     component: () => import('@/views/HelpView.vue'),
