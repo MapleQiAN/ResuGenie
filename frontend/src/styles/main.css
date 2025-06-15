@@ -198,4 +198,20 @@ body {
     --text-light: #cbd5e1;
     --border-color: #334155;
   }
+}
+
+/* 图标样式修复 */
+.n-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.n-button .n-icon {
+  margin-right: 0.25rem;
+  vertical-align: middle;
+}
+
+button > .n-icon {
+  display: flex !important;
 } 

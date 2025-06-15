@@ -206,7 +206,10 @@ const handleStartNow = () => {
 .logo-icon {
   margin-right: 10px;
   display: flex;
+  justify-content: center;
   align-items: center;
+  width: 40px;
+  height: 40px;
   animation: pulse 2s infinite ease-in-out;
 }
 
@@ -243,7 +246,10 @@ const handleStartNow = () => {
 }
 
 .icon-margin-right {
-  margin-right: 6px;
+  margin-right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu-toggle {
@@ -254,6 +260,8 @@ const handleStartNow = () => {
   position: relative;
   padding: 0 6px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
 }
 
 .menu-item::after {
@@ -297,5 +305,18 @@ const handleStartNow = () => {
   .header-content {
     height: 64px;
   }
+}
+
+:deep(.n-icon) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.step-icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style> 

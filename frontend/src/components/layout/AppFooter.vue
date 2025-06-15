@@ -113,7 +113,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 .footer-wave {
   position: absolute;
-  top: -80px;
+  top: -60px;
   left: 0;
   width: 100%;
   overflow: hidden;
@@ -125,7 +125,8 @@ const currentYear = computed(() => new Date().getFullYear())
   position: relative;
   display: block;
   width: calc(100% + 1.3px);
-  height: 80px;
+  height: 60px;
+  transform: rotateY(180deg);
 }
 
 .footer-wave .shape-fill {
@@ -166,7 +167,10 @@ const currentYear = computed(() => new Date().getFullYear())
 .logo-icon {
   margin-right: 10px;
   display: flex;
+  justify-content: center;
   align-items: center;
+  width: 32px;
+  height: 32px;
 }
 
 .logo-text {
@@ -291,11 +295,22 @@ const currentYear = computed(() => new Date().getFullYear())
 
 .social-btn {
   transition: transform 0.3s ease, background-color 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
 }
 
 .social-btn:hover {
   transform: translateY(-3px);
   background-color: rgba(99, 102, 241, 0.1);
+}
+
+:deep(.n-icon) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* 响应式适配 */
