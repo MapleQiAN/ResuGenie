@@ -532,6 +532,7 @@ import {
   Close as CloseIcon,
   InformationCircleOutline
 } from '@vicons/ionicons5'
+import {resumeApi} from "@/api/index.js";
 
 const resumeStore = useResumeStore()
 const message = useMessage()
