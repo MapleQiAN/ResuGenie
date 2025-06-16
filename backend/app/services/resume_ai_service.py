@@ -15,6 +15,7 @@ class ResumeAIService(BaseLLMService):
     def __init__(self):
         """初始化简历AI服务"""
         self.preprocessor = PromptPreprocessor()
+        self._services = {}
         self.resume_system_prompt = """你是ResuGenie系统中的专业简历助手，一个专业的简历优化顾问和职业规划师。你需要帮助用户创建或优化简历，让用户的简历更加出色。
 
 作为一个专业简历顾问，你的职责包括：
@@ -90,4 +91,51 @@ class ResumeAIService(BaseLLMService):
         except Exception as e:
             # 处理任何异常，返回友好的错误信息
             error_message = f"处理您的简历请求时出错: {str(e)}"
-            return self._format_response(error_message, request.model) 
+            return self._format_response(error_message, request.model)
+            
+    def update_service_config(self, config):
+        """
+        临时更新LLM服务的配置
+        
+        Args:
+            config (dict): 包含临时API配置的字典
+        """
+        try:
+            # 获取LLM服务工厂
+            from .llm_factory import LLMServiceFactory
+            factory = LLMServiceFactory()
+            
+            # 更新各个服务的配置
+            for service_name, service in factory._services.items():
+                if service_name == "openai" and hasattr(service, "update_config"):
+                    openai_config = {}
+                    if "OPENAI_API_KEY" in config:
+                        openai_config["api_key"] = config["OPENAI_API_KEY"]
+                    if "OPENAI_API_BASE" in config:
+                        openai_config["api_base"] = config["OPENAI_API_BASE"]
+                    if openai_config:
+                        service.update_config(openai_config)
+                        
+                elif service_name == "deepseek" and hasattr(service, "update_config"):
+                    deepseek_config = {}
+                    if "DEEPSEEK_API_KEY" in config:
+                        deepseek_config["api_key"] = config["DEEPSEEK_API_KEY"]
+                    if "DEEPSEEK_API_BASE" in config:
+                        deepseek_config["api_base"] = config["DEEPSEEK_API_BASE"]
+                    if deepseek_config:
+                        service.update_config(deepseek_config)
+                        
+                elif service_name == "ollama" and hasattr(service, "update_config"):
+                    ollama_config = {}
+                    if "OLLAMA_API_BASE" in config:
+                        ollama_config["api_base"] = config["OLLAMA_API_BASE"]
+                    if ollama_config:
+                        service.update_config(ollama_config)
+            
+            # 保存服务引用以便后续使用
+            self._services = factory._services
+            
+        except Exception as e:
+            import logging
+            logging.error(f"更新服务配置时出错: {str(e)}")
+            # 即使配置更新失败，我们也不中断主流程，只记录错误 

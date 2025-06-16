@@ -17,6 +17,11 @@ class OllamaService(BaseLLMService):
     def __init__(self):
         self.api_base = settings.OLLAMA_API_BASE
     
+    def update_config(self, config):
+        """更新API配置"""
+        if "api_base" in config:
+            self.api_base = config["api_base"]
+    
     async def chat_completion(self, request: ChatCompletionRequest) -> ChatCompletionResponse:
         """使用Ollama API执行聊天补全"""
         try:

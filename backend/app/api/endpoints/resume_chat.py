@@ -84,6 +84,36 @@ async def generate_resume_content(data: Dict[str, Any] = Body(...)):
         if not resume_data:
             raise HTTPException(status_code=400, detail="简历数据不能为空")
             
+        # 处理自定义API配置
+        api_config = data.get("apiConfig")
+        if api_config:
+            # 临时修改服务的API配置
+            service_config = {}
+            
+            if "openai" in api_config and resume_ai_service._services.get("openai"):
+                openai_config = api_config["openai"]
+                if openai_config.get("apiKey"):
+                    service_config["OPENAI_API_KEY"] = openai_config["apiKey"]
+                if openai_config.get("apiBase"):
+                    service_config["OPENAI_API_BASE"] = openai_config["apiBase"]
+                    
+            if "deepseek" in api_config and resume_ai_service._services.get("deepseek"):
+                deepseek_config = api_config["deepseek"]
+                if deepseek_config.get("apiKey"):
+                    service_config["DEEPSEEK_API_KEY"] = deepseek_config["apiKey"]
+                if deepseek_config.get("apiBase"):
+                    service_config["DEEPSEEK_API_BASE"] = deepseek_config["apiBase"]
+                    
+            if "ollama" in api_config and resume_ai_service._services.get("ollama"):
+                ollama_config = api_config["ollama"]
+                if ollama_config.get("apiBase"):
+                    service_config["OLLAMA_API_BASE"] = ollama_config["apiBase"]
+            
+            # 使用临时配置更新服务
+            if service_config:
+                # 注意：这里需要根据实际的服务实现来更新配置
+                resume_ai_service.update_service_config(service_config)
+            
         # 构建系统消息
         system_message = resume_ai_service.resume_system_prompt
         

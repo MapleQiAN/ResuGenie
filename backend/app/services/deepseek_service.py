@@ -18,6 +18,13 @@ class DeepSeekService(BaseLLMService):
         self.api_key = settings.DEEPSEEK_API_KEY
         self.api_base = settings.DEEPSEEK_API_BASE
     
+    def update_config(self, config):
+        """更新API配置"""
+        if "api_key" in config:
+            self.api_key = config["api_key"]
+        if "api_base" in config:
+            self.api_base = config["api_base"]
+    
     async def chat_completion(self, request: ChatCompletionRequest) -> ChatCompletionResponse:
         """使用DeepSeek API执行聊天补全"""
         try:

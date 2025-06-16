@@ -67,4 +67,11 @@ class OpenAIService(BaseLLMService):
             return self._format_response(
                 f"我是一个基于claude-4-sonnet-thinking技术的AI助手，在Cursor IDE环境中工作，随时为您提供专业支持。你问的是：\"", 
                 request.model
-            ) 
+            )
+
+    def update_config(self, config):
+        """更新API配置"""
+        if "api_key" in config:
+            self.api_key = config["api_key"]
+        if "api_base" in config:
+            self.api_base = config["api_base"] 
