@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useMessage } from 'naive-ui'
 
 // 读取环境变量中的API基础路径，默认为本地开发地址
-const BASE_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+const BASE_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://10.122.233.99:8000/api'
 
 // 创建axios实例
 const api = axios.create({
@@ -117,12 +117,35 @@ export const resumeApi = {
   },
   
   // AI生成简历内容（用于表单生成）
-  generateResumeContent: (resumeData, targetPosition, model = 'gpt-3.5-turbo') => {
-    return api.post('/resume-chat/generate', {
+  generateResumeContent: (resumeData, targetPosition, modelConfig = {}) => {
+    const requestData = {
       resumeData,
       targetPosition,
-      model
-    })
+      model: modelConfig.selectedModel || 'gpt-3.5-turbo',
+      temperature: modelConfig.temperature,
+      maxTokens: modelConfig.maxTokens,
+      customPrompt: modelConfig.customPrompt,
+      focusAreas: modelConfig.focusAreas
+    }
+    
+    // 如果使用自定义API，添加API配置
+    if (modelConfig.apiConfig?.useCustomApi) {
+      requestData.apiConfig = {
+        openai: {
+          apiKey: modelConfig.apiConfig.openaiKey,
+          apiBase: modelConfig.apiConfig.openaiBase
+        },
+        deepseek: {
+          apiKey: modelConfig.apiConfig.deepseekKey,
+          apiBase: modelConfig.apiConfig.deepseekBase
+        },
+        ollama: {
+          apiBase: modelConfig.apiConfig.ollamaBase
+        }
+      }
+    }
+    
+    return api.post('/resume-chat/generate', requestData)
   }
 }
 

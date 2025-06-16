@@ -308,6 +308,158 @@
               
               <n-empty v-if="resumeStore.resumeForm.projects.length === 0" description="尚未添加项目经历" />
             </n-tab-pane>
+            
+            <n-tab-pane name="aimodel" tab="AI模型配置 🤖">
+              <div class="ai-model-config">
+                <n-form
+                  :model="resumeStore.aiModel"
+                  label-placement="left"
+                  label-width="auto"
+                  require-mark-placement="right-hanging"
+                >
+                  <n-form-item label="选择AI模型" path="selectedModel">
+                    <n-select 
+                      v-model:value="resumeStore.aiModel.selectedModel" 
+                      :options="aiModelOptions" 
+                      placeholder="请选择AI模型"
+                    />
+                  </n-form-item>
+                  
+                  <n-form-item label="创造性程度" path="temperature">
+                    <n-slider 
+                      v-model:value="resumeStore.aiModel.temperature" 
+                      :min="0" 
+                      :max="1" 
+                      :step="0.1"
+                    />
+                    <div class="parameter-description">
+                      <span>更保守</span>
+                      <span>更创新</span>
+                    </div>
+                    <div class="parameter-hint">数值越高，生成的内容越多样化和创新，但可能不那么准确</div>
+                  </n-form-item>
+                  
+                  <n-form-item label="重点关注领域" path="focusAreas">
+                    <n-select 
+                      v-model:value="resumeStore.aiModel.focusAreas" 
+                      :options="focusAreaOptions" 
+                      placeholder="请选择重点关注领域" 
+                      multiple
+                      tag
+                    />
+                    <div class="parameter-hint">AI将重点关注和优化这些方面的内容</div>
+                  </n-form-item>
+                  
+                  <n-form-item label="自定义提示词" path="customPrompt">
+                    <n-input
+                      v-model:value="resumeStore.aiModel.customPrompt"
+                      type="textarea"
+                      placeholder="可以输入自定义指令，告诉AI如何优化您的简历"
+                      :autosize="{ minRows: 3, maxRows: 6 }"
+                    />
+                    <div class="parameter-hint">例如：'请突出我的团队协作能力'、'请强调我的技术专长'等</div>
+                  </n-form-item>
+                  
+                  <n-divider>API 配置</n-divider>
+                  
+                  <n-form-item>
+                    <n-switch v-model:value="resumeStore.aiModel.apiConfig.useCustomApi">
+                      <template #checked>使用自定义API</template>
+                      <template #unchecked>使用默认API</template>
+                    </n-switch>
+                  </n-form-item>
+                  
+                  <div v-if="resumeStore.aiModel.apiConfig.useCustomApi">
+                    <n-collapse accordion>
+                      <n-collapse-item title="OpenAI API 配置" name="openai">
+                        <n-form-item label="API 密钥" path="apiConfig.openaiKey">
+                          <n-input
+                            v-model:value="resumeStore.aiModel.apiConfig.openaiKey"
+                            type="password"
+                            placeholder="请输入OpenAI API密钥"
+                            show-password-on="click"
+                          />
+                        </n-form-item>
+                        
+                        <n-form-item label="API 基础URL" path="apiConfig.openaiBase">
+                          <n-input
+                            v-model:value="resumeStore.aiModel.apiConfig.openaiBase"
+                            placeholder="https://api.openai.com/v1"
+                          />
+                        </n-form-item>
+                      </n-collapse-item>
+                      
+                      <n-collapse-item title="DeepSeek API 配置" name="deepseek">
+                        <n-form-item label="API 密钥" path="apiConfig.deepseekKey">
+                          <n-input
+                            v-model:value="resumeStore.aiModel.apiConfig.deepseekKey"
+                            type="password"
+                            placeholder="请输入DeepSeek API密钥"
+                            show-password-on="click"
+                          />
+                        </n-form-item>
+                        
+                        <n-form-item label="API 基础URL" path="apiConfig.deepseekBase">
+                          <n-input
+                            v-model:value="resumeStore.aiModel.apiConfig.deepseekBase"
+                            placeholder="https://api.deepseek.com/v1"
+                          />
+                        </n-form-item>
+                      </n-collapse-item>
+                      
+                      <n-collapse-item title="Ollama API 配置" name="ollama">
+                        <n-form-item label="API 基础URL" path="apiConfig.ollamaBase">
+                          <n-input
+                            v-model:value="resumeStore.aiModel.apiConfig.ollamaBase"
+                            placeholder="http://localhost:11434/api"
+                          />
+                          <div class="parameter-hint">Ollama 通常在本地运行，无需API密钥</div>
+                        </n-form-item>
+                      </n-collapse-item>
+                    </n-collapse>
+                    
+                    <div class="api-info-note">
+                      <n-alert type="info">
+                        <template #icon>
+                          <n-icon><information-circle-outline /></n-icon>
+                        </template>
+                        <p>API密钥仅保存在浏览器中，不会传输到服务器。自定义API配置可能会影响应用稳定性。</p>
+                      </n-alert>
+                    </div>
+                  </div>
+                </n-form>
+                
+                <div class="model-info-box">
+                  <h3>模型能力说明</h3>
+                  <div class="model-capabilities" v-if="resumeStore.aiModel.selectedModel">
+                    <div v-if="resumeStore.aiModel.selectedModel === 'gpt-3.5-turbo'">
+                      <p><strong>GPT-3.5 Turbo</strong> 是 OpenAI 推出的强大通用型语言模型，适合大多数简历优化场景。</p>
+                      <ul>
+                        <li>优点：响应速度快，成本低</li>
+                        <li>适用场景：一般职位的简历优化</li>
+                      </ul>
+                    </div>
+                    <div v-else-if="resumeStore.aiModel.selectedModel === 'gpt-4'">
+                      <p><strong>GPT-4</strong> 是 OpenAI 最强大的语言模型，具有更好的理解能力和创造性。</p>
+                      <ul>
+                        <li>优点：更好的文本理解能力，更专业的建议</li>
+                        <li>适用场景：高级职位、管理岗位、特殊行业的简历优化</li>
+                      </ul>
+                    </div>
+                    <div v-else-if="resumeStore.aiModel.selectedModel === 'deepseek-chat'">
+                      <p><strong>DeepSeek Chat</strong> 是国产大模型，具有优秀的中文理解能力。</p>
+                      <ul>
+                        <li>优点：出色的中文语境理解，对中国职场文化更了解</li>
+                        <li>适用场景：针对国内企业的简历优化</li>
+                      </ul>
+                    </div>
+                    <div v-else>
+                      <p>此模型提供基础的简历优化功能，可以帮助改进简历内容的专业性和吸引力。</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </n-tab-pane>
           </n-tabs>
         </n-card>
         
@@ -370,11 +522,15 @@ import {
   NDynamicTags,
   NDynamicInput,
   NIcon,
-  NSelect
+  NSelect,
+  NAlert,
+  NSwitch,
+  NDivider
 } from 'naive-ui'
 import {
   Add as AddIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  InformationCircleOutline
 } from '@vicons/ionicons5'
 
 const resumeStore = useResumeStore()
@@ -391,6 +547,27 @@ const studyTypeOptions = [
   { label: '本科', value: '本科' },
   { label: '专科', value: '专科' },
   { label: '高中', value: '高中' }
+]
+
+// AI模型选项
+const aiModelOptions = [
+  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' },
+  { label: 'GPT-4', value: 'gpt-4' },
+  { label: 'DeepSeek Chat', value: 'deepseek-chat' },
+  { label: 'Llama2', value: 'llama2' },
+  { label: 'Mistral', value: 'mistral' }
+]
+
+// 重点关注领域选项
+const focusAreaOptions = [
+  { label: '专业技能突出', value: 'skills' },
+  { label: '工作成就量化', value: 'achievements' },
+  { label: '个人优势强调', value: 'strengths' },
+  { label: '行业术语优化', value: 'terminology' },
+  { label: '领导力展示', value: 'leadership' },
+  { label: '团队协作能力', value: 'teamwork' },
+  { label: '解决问题能力', value: 'problem-solving' },
+  { label: '创新思维', value: 'innovation' }
 ]
 
 // 示例模板
@@ -511,7 +688,8 @@ const generateResume = async () => {
       const targetPosition = resumeStore.resumeForm.basics.label || ''
       const aiResponse = await resumeApi.generateResumeContent(
         resumeStore.resumeForm, 
-        targetPosition
+        targetPosition,
+        resumeStore.aiModel
       )
       
       if (aiResponse && aiResponse.content) {
@@ -885,6 +1063,56 @@ const generateResume = async () => {
   animation: fadeIn 0.5s ease-out;
 }
 
+.ai-model-config {
+  padding: 0.5rem;
+}
+
+.parameter-description {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #5c6a7c;
+}
+
+.parameter-hint {
+  font-size: 0.8rem;
+  color: #8492a6;
+  margin-top: 0.3rem;
+  font-style: italic;
+}
+
+.model-info-box {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, #f5f9ff 0%, #edf2ff 100%);
+  border-radius: 12px;
+  border: 1px solid #e3eaff;
+}
+
+.model-info-box h3 {
+  margin-top: 0;
+  color: #4263eb;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.model-capabilities p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #3c4858;
+}
+
+.model-capabilities ul {
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.model-capabilities li {
+  margin-bottom: 0.5rem;
+  color: #5c6a7c;
+}
+
 .n-collapse-item__header {
   border-radius: 10px 10px 0 0 !important;
   background-color: #f8f9fa !important;
@@ -898,5 +1126,17 @@ const generateResume = async () => {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+.api-info-note {
+  margin-top: 1.5rem;
+}
+
+.n-alert {
+  margin-bottom: 1rem;
+}
+
+.n-divider {
+  margin: 1.5rem 0;
 }
 </style> 

@@ -47,7 +47,23 @@ export const useResumeStore = defineStore('resume', {
     // 优化状态
     optimizing: false,
     // 当前处理的简历ID
-    currentResumeId: null
+    currentResumeId: null,
+    // AI模型配置
+    aiModel: {
+      selectedModel: 'gpt-3.5-turbo',
+      temperature: 0.7,
+      maxTokens: 2000,
+      customPrompt: '',
+      focusAreas: [],
+      apiConfig: {
+        openaiKey: '',
+        openaiBase: 'https://api.openai.com/v1',
+        deepseekKey: '',
+        deepseekBase: 'https://api.deepseek.com/v1',
+        ollamaBase: 'http://localhost:11434/api',
+        useCustomApi: false
+      }
+    }
   }),
   
   getters: {
@@ -108,6 +124,11 @@ export const useResumeStore = defineStore('resume', {
     // 选择简历模板
     selectTemplate(templateId) {
       this.selectedTemplate = templateId
+    },
+    
+    // 设置AI模型配置
+    setAiModel(modelConfig) {
+      this.aiModel = { ...this.aiModel, ...modelConfig }
     },
     
     // 创建简历
